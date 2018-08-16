@@ -1,4 +1,5 @@
 require 'sinatra'
+require "sinatra/namespace"
 require 'mongoid'
 
 # DB Setup
@@ -20,6 +21,14 @@ class Book
   index({ isbn:1 }, { unique: true, name: "isbn_index" })
 end
 
-get '/' do
-  'Welcome to BookList!'
+namespace '/api/v1' do
+
+  before do
+    content_type 'application/json'
+  end
+
+
+  get '/books' do
+    Book.all.to_json
+  end
 end
