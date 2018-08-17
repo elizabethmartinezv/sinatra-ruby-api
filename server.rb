@@ -48,6 +48,12 @@ namespace '/api/v1' do
     content_type 'application/json'
   end
 
+  get '/books/:id' do |id|
+    book = Book.where(id: id).first
+    halt(404, { message:'Book Not Found'}.to_json) unless book
+    BookSerializer.new(book).to_json
+  end
+
 
   get '/books' do
     books = Book.all
