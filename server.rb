@@ -25,6 +25,23 @@ class Book
   scope :author, -> (author) { where(author: author) }
 end
 
+class BookSerializer
+  def initialize(book)
+    @book = book
+  end
+
+  def as_json(*)
+    data = {
+      id:@book.id.to_s,
+      title:@book.title,
+      author:@book.author,
+      isbn:@book.isbn
+    }
+    data[:errors] = @book.errors if@book.errors.any?
+    data
+  end
+end
+
 namespace '/api/v1' do
 
   before do
@@ -39,6 +56,6 @@ namespace '/api/v1' do
       books = books.send(filter, params[filter]) if params[filter]
     end
 
-    books.to_json
+    books.map { |book| BookSerializer.new(book) }.to_json
   end
 end
